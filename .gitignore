@@ -1,4 +1,4 @@
 *.scss
 *.css.map
-./test
-package.json
+test/
+.gitignore
