@@ -2,30 +2,57 @@
 <html>
 
 <head>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/4.2.5/marked.min.js"
-        integrity="sha512-5JZDwulT+S/K8p/KO4tikNKA5t6Ebb+tqPwT7Ma+lVpJuS4G+Z0lSktWcl8hymXeFqCprGEuKGOCrKjyulql/A=="
-        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/9000.0.1/prism.min.js"
-        integrity="sha512-UOoJElONeUNzQbbKQbjldDf9MwOHqxNz49NNJJ1d90yp+X9edsHyJoAs6O4K19CZGaIdjI5ohK+O2y5lBTW6uQ=="
-        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
-    <script type="text/javascript" src="./modules/purify.min.js"></script>
-    <script src="./index.js"></script>
-
+    <!-- STYLESHEET -->
     <link rel="stylesheet" href="./index.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/9000.0.1/themes/prism.min.css"
-        integrity="sha512-/mZ1FHPkg6EKcxo0fKXF51ak6Cr2ocgDi5ytaTBjsQZIH/RNs6GF6+oId/vPe3eJB836T36nXwVh/WBl/cWT4w=="
+    <!-- PRISM THEME -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-funky.min.css"
+        integrity="sha512-q59Usnbm/Dz3MeqoMEATHqIwozatJmXr/bFurDR7hpB5e2KxU+j2mp89Am9wq9jwZRaikpnKGHw4LP/Kr9soZQ=="
         crossorigin="anonymous" referrerpolicy="no-referrer" />
-
+    <!-- GOOGLE FONT - RALEWAY -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Raleway">
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css"
+        integrity="sha512-MV7K8+y+gLIBoVD59lQIYicR65iaqukzvf/nwasF0nqhPay5w/9lJmVM2hMDcnK1OnMGCdVK+iQrJ7lzPJQd1w=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
     <title>Markdown Previewer</title>
 </head>
 
 <body>
-    <main>
-        <textarea id="testinput" type="text"></textarea>
-        <div id="test">
-        </div>
-    </main>
+    <main id="reactApp"/>
+    <scripts>
+        <!-- MARKED -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/4.2.5/marked.min.js"
+            integrity="sha512-5JZDwulT+S/K8p/KO4tikNKA5t6Ebb+tqPwT7Ma+lVpJuS4G+Z0lSktWcl8hymXeFqCprGEuKGOCrKjyulql/A=="
+            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+        <!-- PRISM -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"
+            integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg=="
+            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+        <!-- JQuery -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+        <!-- React -->
+        <script
+            src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.0-next-fecc288b7-20221025/umd/react.production.min.js"
+            integrity="sha512-KRvh8vbjSrG2lmDWaAoA14kEY8kr/+qYvoMHpOW/ehVXMlT988eUORqjA48AqXIjMRkICc00HTbaxCSmjdrjDQ=="
+            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+        <!-- ReactDOM -->
+        <script
+            src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.0-next-fecc288b7-20221025/umd/react-dom.production.min.js"
+            integrity="sha512-cxcPLgVHMp3RZ0mrRr39UUHbdDfBRt1zxmanZ3KKud4FdKQK30e3LBXw1FaCYDV41xpGwnpWYlFYdPUnnR53Xg=="
+            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+        <!-- Babel -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.20.11/babel.min.js"
+            integrity="sha512-IApuVfIDFro2vyERRyRgOa2TruCtteN5T2m6KOJvjQuteZ5HWMoUXeReD/qAaM1UN2oJRZn+12ZK3P3uykRF8Q=="
+            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+        <!-- DOMPurify -->
+        <script type="text/javascript" src="./modules/purify.min.js"></script>
+
+        <script data-plugins="transform-modules-umd" type="text/babel" src="./modules/enums.js"></script>
+        <script data-plugins="transform-modules-umd" type="text/babel" src="./modules/components.js"></script>
+        <script data-plugins="transform-modules-umd" type="text/babel" src="./index.js"></script>
+        <!-- <script  data-plugins="transform-modules-umd" type="text/babel" src="./test.js"></script> -->
+
+    </scripts>
 </body>
 
 </html>
