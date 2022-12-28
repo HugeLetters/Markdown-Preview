@@ -4,36 +4,26 @@ class Wrapper extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            position: {
-                top: 0,
-                left: 0
-            }
+            position: { top: 0, left: 0 }
         };
         this.trackedData = {
-            mouseOrigin: {
-                top: 0,
-                left: 0
-            },
-            windowOrigin: {
-                top: 0,
-                left: 0
-            }
+            mouseOrigin: { top: 0, left: 0 },
+            elementOrigin: { top: 0, left: 0 },
+            windowOrigin: { top: undefined, left: undefined }
         };
         this.sizeStyles = {
-            minimized: {
-                minHeight: "48vh",
-                display: "block"
-            },
-            maximized: {
-                minHeight: "98vh",
-                display: "block"
-            },
-            closed: {
-                display: "none"
-            }
+            minimized: { minHeight: "48vh", display: "block" },
+            maximized: { minHeight: "98vh", display: "block", top: 0, left: 0 },
+            closed: { display: "none" }
         }
     }
     static defaultProps = { label: "Component", sizeState: WRAPPER_SIZE_STATE.MINIMIZED }
+
+    componentDidMount() {
+        console.log("Mounted");
+        const { top, left, width, height } = this.refs.wrapper.getBoundingClientRect();
+        this.trackedData.windowOrigin = { top, left, width, height };
+    }
 
     toggleSize = () => {
         switch (this.props.sizeState) {
@@ -48,10 +38,10 @@ class Wrapper extends React.Component {
                 break;
         }
     }
-    getSizeStyle = (sizeState) => {
+    getStyle = (sizeState) => {
         switch (sizeState) {
             case WRAPPER_SIZE_STATE.MINIMIZED:
-                return this.sizeStyles.minimized;
+                return { ...this.sizeStyles.minimized, ...this.state.position };
             case WRAPPER_SIZE_STATE.MAXIMIZED:
                 return this.sizeStyles.maximized;
             case WRAPPER_SIZE_STATE.CLOSED:
@@ -61,34 +51,36 @@ class Wrapper extends React.Component {
         }
     }
     handleDrag = (e) => {
-        console.log("Moving");
-        const { mouseOrigin, windowOrigin } = this.trackedData;
+        const { mouseOrigin, elementOrigin, windowOrigin } = this.trackedData;
         this.setState(() => ({
             "position":
             {
-                "top": windowOrigin.top + e.clientY - mouseOrigin.top,
-                "left": windowOrigin.left + e.clientX - mouseOrigin.left
+                "top": Math.min(
+                    window.innerHeight * 0.99 - windowOrigin.height - windowOrigin.top,
+                    Math.max(-windowOrigin.top + window.innerHeight * 0.01, elementOrigin.top + e.clientY - mouseOrigin.top)),
+                "left": Math.min(
+                    window.innerWidth * 0.995 - windowOrigin.width - windowOrigin.left,
+                    Math.max(-windowOrigin.left + window.innerWidth * 0.005, elementOrigin.left + e.clientX - mouseOrigin.left))
             }
         }));
     }
+
     handleStartDrag = (e) => {
         e.currentTarget.addEventListener("mousemove", this.handleDrag)
-        console.log("Dragging");
         this.trackedData.mouseOrigin = { top: e.clientY, left: e.clientX }
-        this.trackedData.windowOrigin = { top: this.state.position.top, left: this.state.position.left }
+        this.trackedData.elementOrigin = { top: this.state.position.top, left: this.state.position.left }
     }
     handleStopDrag = (e) => {
         e.currentTarget.removeEventListener("mousemove", this.handleDrag)
-        console.log("Stopped");
     }
 
     render() {
         console.log(this);
         const label = this.props.label[0].toUpperCase() + this.props.label.slice(1);
-        const style = { ...this.getSizeStyle(this.props.sizeState), ...this.state.position };
+        const style = { ...this.getStyle(this.props.sizeState) };
         return (
-            <div style={style} class="wrapper">
-                <div class="elementHeader" onMouseDown={this.handleStartDrag} onMouseUp={this.handleStopDrag} onMouseLeave={this.handleStopDrag}>
+            <div ref="wrapper" style={style} class="wrapper">
+                <div class="elementHeader unselectable" onMouseDown={this.handleStartDrag} onMouseUp={this.handleStopDrag} onMouseLeave={this.handleStopDrag}>
                     <span class="elementLabel">{label}</span>
                     <button onClick={this.toggleSize} class="fa-solid fa-maximize" />
                 </div>
@@ -103,17 +95,9 @@ class TextComponent extends React.Component {
         this.state = {
         };
         this.styles = {
-            minimized: {
-                height: "calc(48vh - 2.5rem)",
-                display: "block",
-            },
-            maximized: {
-                height: "calc(98vh - 2.5rem)",
-                display: "block"
-            },
-            closed: {
-                display: "none"
-            }
+            minimized: { height: "calc(48vh - 2.5rem)", display: "block", },
+            maximized: { height: "calc(98vh - 2.5rem)", display: "block" },
+            closed: { display: "none" }
         }
     };
     static defaultProps = { type: TEXT_COMPONENT.EDITOR, sizeState: WRAPPER_SIZE_STATE.MINIMIZED };
