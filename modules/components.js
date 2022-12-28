@@ -9,7 +9,7 @@ class Wrapper extends React.Component {
         this.trackedData = {
             mouseOrigin: { top: 0, left: 0 },
             elementOrigin: { top: 0, left: 0 },
-            windowOrigin: { top: undefined, left: undefined }
+            windowOrigin: { top: 0, left: 0 }
         };
         this.sizeStyles = {
             minimized: { minHeight: "48vh", display: "block" },
@@ -20,11 +20,18 @@ class Wrapper extends React.Component {
     static defaultProps = { label: "Component", sizeState: WRAPPER_SIZE_STATE.MINIMIZED }
 
     componentDidMount() {
-        console.log("Mounted");
-        const { top, left, width, height } = this.refs.wrapper.getBoundingClientRect();
-        this.trackedData.windowOrigin = { top, left, width, height };
+        this.trackedData.windowOrigin = this.getAbsoluteXY();
+        new ResizeObserver(() => {
+            Object.assign(this.trackedData.windowOrigin, this.getAbsoluteXY());
+        }).observe(this.refs.wrapper);
     }
 
+    getAbsoluteXY = () => {
+        const { top, left, width, height } = this.refs.wrapper.getBoundingClientRect();
+        const absoluteTop = top - this.state.position.top;
+        const absoluteLeft = left - this.state.position.left;
+        return { top: absoluteTop, left: absoluteLeft, width, height }
+    }
     toggleSize = () => {
         switch (this.props.sizeState) {
             case WRAPPER_SIZE_STATE.MINIMIZED:
@@ -64,7 +71,6 @@ class Wrapper extends React.Component {
             }
         }));
     }
-
     handleStartDrag = (e) => {
         e.currentTarget.addEventListener("mousemove", this.handleDrag)
         this.trackedData.mouseOrigin = { top: e.clientY, left: e.clientX }
