@@ -1,10 +1,8 @@
 html {
   font-size: 1rem;
-  width: 100%;
-  height: 100%;
   font-family: "Raleway";
-  margin: 0;
-  padding: 0;
+  min-width: 100vw;
+  min-height: 100vh;
 }
 
 *,
@@ -23,8 +21,8 @@ html {
 }
 
 body {
-  width: 100%;
-  height: 100%;
+  min-width: 100vw;
+  min-height: 100vh;
   margin: 0;
   padding: 0;
 }
@@ -33,8 +31,8 @@ main {
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 100%;
-  height: 100%;
+  min-width: 100vw;
+  min-height: 100vh;
 }
 
 .wrapper {
@@ -43,7 +41,6 @@ main {
 }
 .wrapper #editor {
   min-height: calc(48vh - 2.5rem);
-  max-height: calc(98vh - 2.5rem);
   min-width: 40vw;
   max-width: 95vw;
   width: 100%;

@@ -19,17 +19,10 @@ class Wrapper extends React.Component {
     }
     static defaultProps = { label: "Component", sizeState: WRAPPER_SIZE_STATE.MINIMIZED }
 
-    componentDidMount() {
-        this.trackedData.windowOrigin = this.getAbsoluteXY();
-        new ResizeObserver(() => {
-            Object.assign(this.trackedData.windowOrigin, this.getAbsoluteXY());
-        }).observe(this.refs.wrapper);
-    }
-
     getAbsoluteXY = () => {
         const { top, left, width, height } = this.refs.wrapper.getBoundingClientRect();
-        const absoluteTop = top - this.state.position.top;
-        const absoluteLeft = left - this.state.position.left;
+        const absoluteTop = window.scrollY + top - this.state.position.top;
+        const absoluteLeft = window.scrollX + left - this.state.position.left;
         return { top: absoluteTop, left: absoluteLeft, width, height }
     }
     toggleSize = () => {
@@ -59,25 +52,27 @@ class Wrapper extends React.Component {
     }
     handleDrag = (e) => {
         const { mouseOrigin, elementOrigin, windowOrigin } = this.trackedData;
+        const { width, height } = document.body.getBoundingClientRect();
         this.setState(() => ({
             "position":
             {
                 "top": Math.min(
-                    window.innerHeight * 0.99 - windowOrigin.height - windowOrigin.top,
-                    Math.max(-windowOrigin.top + window.innerHeight * 0.01, elementOrigin.top + e.clientY - mouseOrigin.top)),
+                    height - windowOrigin.height - windowOrigin.top - 5,
+                    Math.max(-windowOrigin.top + 5, elementOrigin.top + e.clientY - mouseOrigin.top)),
                 "left": Math.min(
-                    window.innerWidth * 0.995 - windowOrigin.width - windowOrigin.left,
-                    Math.max(-windowOrigin.left + window.innerWidth * 0.005, elementOrigin.left + e.clientX - mouseOrigin.left))
+                    width - windowOrigin.width - windowOrigin.left - 5,
+                    Math.max(-windowOrigin.left + 5, elementOrigin.left + e.clientX - mouseOrigin.left))
             }
         }));
     }
-    handleStartDrag = (e) => {
+    handleDragStart = (e) => {
         window.addEventListener("mousemove", this.handleDrag)
         window.addEventListener("mouseup",
             () => { window.removeEventListener("mousemove", this.handleDrag) },
             { once: true })
         this.trackedData.mouseOrigin = { top: e.clientY, left: e.clientX }
         this.trackedData.elementOrigin = { top: this.state.position.top, left: this.state.position.left }
+        this.trackedData.windowOrigin = this.getAbsoluteXY();
     }
 
     render() {
@@ -86,7 +81,7 @@ class Wrapper extends React.Component {
         const style = { ...this.getStyle(this.props.sizeState) };
         return (
             <div ref="wrapper" style={style} class="wrapper">
-                <div class="elementHeader unselectable" onMouseDown={this.handleStartDrag}>
+                <div class="elementHeader unselectable" onMouseDown={this.handleDragStart}>
                     <span class="elementLabel">{label}</span>
                     <button onClick={this.toggleSize} class="fa-solid fa-maximize" />
                 </div>
