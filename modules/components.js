@@ -72,12 +72,12 @@ class Wrapper extends React.Component {
         }));
     }
     handleStartDrag = (e) => {
-        e.currentTarget.addEventListener("mousemove", this.handleDrag)
+        window.addEventListener("mousemove", this.handleDrag)
+        window.addEventListener("mouseup",
+            () => { window.removeEventListener("mousemove", this.handleDrag) },
+            { once: true })
         this.trackedData.mouseOrigin = { top: e.clientY, left: e.clientX }
         this.trackedData.elementOrigin = { top: this.state.position.top, left: this.state.position.left }
-    }
-    handleStopDrag = (e) => {
-        e.currentTarget.removeEventListener("mousemove", this.handleDrag)
     }
 
     render() {
@@ -86,7 +86,7 @@ class Wrapper extends React.Component {
         const style = { ...this.getStyle(this.props.sizeState) };
         return (
             <div ref="wrapper" style={style} class="wrapper">
-                <div class="elementHeader unselectable" onMouseDown={this.handleStartDrag} onMouseUp={this.handleStopDrag} onMouseLeave={this.handleStopDrag}>
+                <div class="elementHeader unselectable" onMouseDown={this.handleStartDrag}>
                     <span class="elementLabel">{label}</span>
                     <button onClick={this.toggleSize} class="fa-solid fa-maximize" />
                 </div>
