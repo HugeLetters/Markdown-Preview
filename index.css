@@ -1,7 +1,6 @@
 html {
   font-size: 1rem;
   font-family: "Raleway";
-  min-width: 100vw;
   min-height: 100vh;
 }
 
@@ -21,7 +20,6 @@ html {
 }
 
 body {
-  min-width: 100vw;
   min-height: 100vh;
   margin: 0;
   padding: 0;
@@ -31,7 +29,6 @@ main {
   display: flex;
   flex-direction: column;
   align-items: center;
-  min-width: 100vw;
   min-height: 100vh;
 }
 
@@ -39,18 +36,16 @@ main {
   margin: 0.3rem;
   position: relative;
 }
+.wrapper #previewer,
 .wrapper #editor {
-  min-height: calc(48vh - 2.5rem);
   min-width: 40vw;
   max-width: 95vw;
-  width: 100%;
-  height: calc(100% - 2.5rem);
+  height: calc(48vh - 2.5rem);
 }
 .wrapper #previewer {
-  max-width: 95vw;
+  resize: both;
   overflow-y: auto;
   overflow-x: auto;
-  height: calc(100% - 2.5rem);
 }
 .wrapper #previewer img {
   max-width: 100%;

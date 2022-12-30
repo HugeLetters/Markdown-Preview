@@ -96,9 +96,15 @@ class TextComponent extends React.Component {
         this.state = {
         };
         this.styles = {
-            minimized: { height: "calc(48vh - 2.5rem)", display: "block", },
-            maximized: { height: "calc(98vh - 2.5rem)", display: "block" },
+            minimized: {
+                display: "block",
+                minHeight: "calc(48vh - 2.5rem)",
+            },
+            maximized: { resize: "horizontal", height: "calc(98vh - 2.5rem)", display: "block" },
             closed: { display: "none" }
+        }
+        this.trackedData = {
+            height: 1,
         }
     };
     static defaultProps = { type: TEXT_COMPONENT.EDITOR, sizeState: WRAPPER_SIZE_STATE.MINIMIZED };
@@ -109,10 +115,12 @@ class TextComponent extends React.Component {
     getStyle = (state) => {
         switch (state) {
             case WRAPPER_SIZE_STATE.MINIMIZED:
-                return this.styles.minimized;
-            case WRAPPER_SIZE_STATE.MAXIMIZED:
+                return { ...this.styles.minimized, height: this.trackedData.height };
+                case WRAPPER_SIZE_STATE.MAXIMIZED:
+                this.trackedData.height = this.refs.textElement.getBoundingClientRect().height;
                 return this.styles.maximized;
-            case WRAPPER_SIZE_STATE.CLOSED:
+                case WRAPPER_SIZE_STATE.CLOSED:
+                this.trackedData.height = this.refs.textElement.getBoundingClientRect().height;
                 return this.styles.closed;
             default:
                 return this.styles.closed;
@@ -124,13 +132,13 @@ class TextComponent extends React.Component {
         let componentBody;
         switch (this.props.type) {
             case TEXT_COMPONENT.EDITOR:
-                componentBody = <textarea id={TEXT_COMPONENT.EDITOR}></textarea>;
+                componentBody = <textarea id={TEXT_COMPONENT.EDITOR} ref="textElement"></textarea>;
                 break;
             case TEXT_COMPONENT.PREVIEWER:
-                componentBody = <div id={TEXT_COMPONENT.PREVIEWER}></div>;
+                componentBody = <div id={TEXT_COMPONENT.PREVIEWER} ref="textElement"></div>;
                 break;
             default:
-                componentBody = <textarea id={TEXT_COMPONENT.EDITOR}></textarea>;
+                componentBody = <textarea id={TEXT_COMPONENT.EDITOR} ref="textElement"></textarea>;
                 break;
         }
         Object.assign(componentBody.props, { style: this.getStyle(this.props.sizeState) });
