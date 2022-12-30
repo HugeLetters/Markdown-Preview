@@ -60,6 +60,7 @@ main {
   justify-content: space-between;
 }
 .wrapper .elementHeader button {
+  background-color: transparent;
   border: 0;
   margin: 0;
   padding: 0;
