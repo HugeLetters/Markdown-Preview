@@ -70,6 +70,7 @@ main {
   cursor: pointer;
 }
 .wrapper .elementHeader button:hover {
+  border: 1px solid black;
   color: aqua;
 }
 .wrapper .elementHeader .elementLabel {
