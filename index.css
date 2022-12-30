@@ -69,7 +69,7 @@ main {
   cursor: pointer;
 }
 .wrapper .elementHeader button:hover {
-  color: white;
+  color: aqua;
 }
 .wrapper .elementHeader .elementLabel {
   margin: auto 0;
