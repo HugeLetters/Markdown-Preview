@@ -4,9 +4,9 @@ export const TEXT_COMPONENT = Object.freeze({
 });
 
 export const APP_SIZE_STATE = Object.freeze({
-    EDITOR_OPEN: 1,
-    PREVIEWER_OPEN: 2,
-    BOTH_OPEN: 3
+    EDITOR: 1,
+    PREVIEWER: 2,
+    BOTH: 3
 })
 
 export const WRAPPER_SIZE_STATE = Object.freeze({

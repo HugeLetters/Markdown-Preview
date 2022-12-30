@@ -21,9 +21,6 @@ body {
   min-height: 100vh;
   margin: 0;
   padding: 0;
-}
-
-main {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -77,4 +74,28 @@ main {
   margin: auto 0;
   vertical-align: middle;
   font-size: 1.5rem;
+}
+
+@-webkit-keyframes backgroundScroll {
+  0% {
+    transform: translateX(0%);
+  }
+  50% {
+    transform: translateX(50%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes backgroundScroll {
+  0% {
+    transform: translateX(0%);
+  }
+  50% {
+    transform: translateX(50%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
 }/*# sourceMappingURL=index.css.map */

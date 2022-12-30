@@ -110,7 +110,6 @@ class TextComponent extends React.Component {
     static defaultProps = { type: TEXT_COMPONENT.EDITOR, sizeState: WRAPPER_SIZE_STATE.MINIMIZED };
 
     handleSizeChange = (size) => {
-        // if (size === WRAPPER_SIZE_STATE.MAXIMIZED) { this.trackedData.height = this.refs.textElement.getBoundingClientRect().height }
         this.props.onSizeChange(this.props.type, size)
     }
     handleFocus = () => { this.props.onFocus(this.props.type) }
@@ -155,11 +154,107 @@ class TextComponent extends React.Component {
     }
 }
 
+class Background extends React.Component {
+    constructor(props) {
+        super(props)
+        const { width, height } = document.body.getBoundingClientRect();
+        this.state = { size: { width, height } };
+        this.rowSize = 100;
+        this.colCount = 4;
+        this.style = {
+            position: "absolute",
+            background: "#600060",
+            fontFamily: "Impact",
+            fontSize: `${this.rowSize / 1.2}px`,
+            color: "white",
+            WebkitTextStroke: "2px black",
+            display: "flex",
+            flexFlow: "column",
+            justifyContent: "space-evenly"
+        }
+        this.colStyle = {
+            overflow: "hidden",
+            whiteSpace: "nowrap",
+            margin: "0 10px",
+            transition: "color 0.2s linear"
+        }
+        this.rowStyle = {
+            overflow: "hidden",
+            display: "flex",
+            flexFlow: "row",
+        }
+        this.rowHalfStyle = {
+            position: "relative",
+            display: "flex",
+            flexFlow: "row",
+            left: -width,
+            animation: "backgroundScroll 10s linear 0s infinite"
+        }
+        new ResizeObserver(
+            (entries) => {
+                const { width, height } = entries[0].target.getBoundingClientRect();
+                this.setState(() => ({ size: { width, height } }))
+            })
+            .observe(document.body);
+    }
+    themeBoth = (focus) => {
+        const words = [TEXT_COMPONENT.EDITOR, TEXT_COMPONENT.PREVIEWER];
+        const focusIndex = focus === COMPONENT_FOCUS.EDITOR ? 0 : 1;
+        return (new Array(this.colCount)).fill(1).map((_, i) => {
+            const word = words[i % 2].toUpperCase();
+            const focusStyle = i % 2 == focusIndex ? { color: "black", WebkitTextStroke: "2px white" } : {};
+            return <span style={{ ...this.colStyle, ...focusStyle }}>{word}</span>
+        })
+    }
+    themeEditor = () => {
+        return (new Array(this.colCount)).fill(1).map((_, i) => {
+            const focusStyle = i % 2 ? { color: "black", WebkitTextStroke: "2px white" } : {};
+            return <span style={{ ...this.colStyle, ...focusStyle }}>{TEXT_COMPONENT.EDITOR.toUpperCase()}</span>
+        })
+    }
+    themePreviewer = () => {
+        return (new Array(this.colCount)).fill(1).map((_, i) => {
+            const focusStyle = i % 2 ? { color: "black", WebkitTextStroke: "2px white" } : {};
+            return <span style={{ ...this.colStyle, ...focusStyle }}>{TEXT_COMPONENT.PREVIEWER.toUpperCase()}</span>
+        })
+    }
+
+    render() {
+        console.log(this);
+        const rowCount = Math.floor(this.state.size.height / this.rowSize);
+
+        let backgroundRowHalf;
+        switch (this.props.theme.size) {
+            case APP_SIZE_STATE.BOTH:
+                backgroundRowHalf = this.themeBoth(this.props.theme.focus);
+                break;
+            case APP_SIZE_STATE.EDITOR:
+                backgroundRowHalf = this.themeEditor();
+                break;
+            case APP_SIZE_STATE.PREVIEWER:
+                backgroundRowHalf = this.themePreviewer();
+                break;
+            default:
+                backgroundRowHalf = this.themeBoth(this.props.theme.focus);
+                break;
+        }
+        const backgroundArray = (new Array(rowCount)).fill(1).map((_, i) => {
+            const direction = i % 2 ? "normal" : "reverse";
+            return <div style={this.rowStyle}>
+                <div style={{ ...this.rowHalfStyle, animationDirection: direction }}>{backgroundRowHalf}</div>
+                <div style={{ ...this.rowHalfStyle, animationDirection: direction }}>{backgroundRowHalf}</div>
+                <div style={{ ...this.rowHalfStyle, animationDirection: direction }}>{backgroundRowHalf}</div>
+            </div >
+        });
+        return <div id="background" style={{ ...this.style, ...this.state.size }}>{backgroundArray}</div >
+    }
+}
+
 export class App extends React.PureComponent {
     constructor(props) {
         super(props)
         this.state = {
-            size: APP_SIZE_STATE.BOTH_OPEN,
+            size: APP_SIZE_STATE.BOTH,
             focus: COMPONENT_FOCUS.EDITOR
         }
     }
@@ -167,16 +262,16 @@ export class App extends React.PureComponent {
     handleSizeChange = (type, size) => {
         switch (true) {
             case type == TEXT_COMPONENT.EDITOR && size == WRAPPER_SIZE_STATE.MAXIMIZED:
-                this.setState(() => ({ size: APP_SIZE_STATE.EDITOR_OPEN }))
+                this.setState(() => ({ size: APP_SIZE_STATE.EDITOR }))
                 break;
             case type == TEXT_COMPONENT.PREVIEWER && size == WRAPPER_SIZE_STATE.MAXIMIZED:
-                this.setState(() => ({ size: APP_SIZE_STATE.PREVIEWER_OPEN }))
+                this.setState(() => ({ size: APP_SIZE_STATE.PREVIEWER }))
                 break;
             case size == WRAPPER_SIZE_STATE.MINIMIZED:
-                this.setState(() => ({ size: APP_SIZE_STATE.BOTH_OPEN }))
+                this.setState(() => ({ size: APP_SIZE_STATE.BOTH }))
                 break;
             default:
-                this.setState(() => ({ size: APP_SIZE_STATE.BOTH_OPEN }))
+                this.setState(() => ({ size: APP_SIZE_STATE.BOTH }))
                 break;
         }
     }
@@ -188,13 +283,13 @@ export class App extends React.PureComponent {
         console.log(this);
         let editorSize, previewerSize;
         switch (this.state.size) {
-            case APP_SIZE_STATE.BOTH_OPEN:
+            case APP_SIZE_STATE.BOTH:
                 [editorSize, previewerSize] = [WRAPPER_SIZE_STATE.MINIMIZED, WRAPPER_SIZE_STATE.MINIMIZED]
                 break;
-            case APP_SIZE_STATE.EDITOR_OPEN:
+            case APP_SIZE_STATE.EDITOR:
                 [editorSize, previewerSize] = [WRAPPER_SIZE_STATE.MAXIMIZED, WRAPPER_SIZE_STATE.CLOSED]
                 break;
-            case APP_SIZE_STATE.PREVIEWER_OPEN:
+            case APP_SIZE_STATE.PREVIEWER:
                 [editorSize, previewerSize] = [WRAPPER_SIZE_STATE.CLOSED, WRAPPER_SIZE_STATE.MAXIMIZED]
                 break;
             default:
@@ -202,6 +297,7 @@ export class App extends React.PureComponent {
                 break;
         }
         return (<React.Fragment>
+            <Background theme={{ focus: this.state.focus, size: this.state.size }} />
             <TextComponent
                 type={TEXT_COMPONENT.EDITOR}
                 sizeState={editorSize}

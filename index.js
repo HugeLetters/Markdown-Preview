@@ -6,7 +6,7 @@ $(() => {
         defaultCodeLanguage: "js"
     };
 
-    const App = ReactDOM.createRoot(document.getElementById("reactApp"));
+    const App = ReactDOM.createRoot(document.body);
     App.render(<components.App />);
 
     marked.setOptions({
