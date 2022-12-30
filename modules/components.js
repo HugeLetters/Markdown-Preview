@@ -176,7 +176,7 @@ class Background extends React.Component {
             overflow: "hidden",
             whiteSpace: "nowrap",
             margin: "0 10px",
-            transition: "color 0.2s linear"
+            transition: "color 0.4s linear"
         }
         this.rowStyle = {
             overflow: "hidden",
