@@ -109,17 +109,18 @@ class TextComponent extends React.Component {
     };
     static defaultProps = { type: TEXT_COMPONENT.EDITOR, sizeState: WRAPPER_SIZE_STATE.MINIMIZED };
 
-    handleSizeChange = (size) => { this.props.onSizeChange(this.props.type, size) }
+    handleSizeChange = (size) => {
+        if (size === WRAPPER_SIZE_STATE.MAXIMIZED) { this.trackedData.height = this.refs.textElement.getBoundingClientRect().height }
+        this.props.onSizeChange(this.props.type, size)
+    }
     handleFocus = () => { this.props.onFocus(this.props.type) }
     getStyle = (state) => {
         switch (state) {
             case WRAPPER_SIZE_STATE.MINIMIZED:
                 return { ...this.styles.minimized, height: this.trackedData.height };
             case WRAPPER_SIZE_STATE.MAXIMIZED:
-                this.trackedData.height = this.refs.textElement.getBoundingClientRect().height;
                 return this.styles.maximized;
             case WRAPPER_SIZE_STATE.CLOSED:
-                this.trackedData.height = this.refs.textElement.getBoundingClientRect().height;
                 return this.styles.closed;
             default:
                 return this.styles.closed;
@@ -178,17 +179,7 @@ export class App extends React.Component {
         }
     }
     handleFocus = (type) => {
-        switch (type) {
-            case TEXT_COMPONENT.EDITOR:
-                this.setState(() => ({ focus: COMPONENT_FOCUS.EDITOR }))
-                break;
-            case TEXT_COMPONENT.PREVIEWER:
-                this.setState(() => ({ focus: COMPONENT_FOCUS.PREVIEWER }))
-                break;
-            default:
-                this.setState(() => ({ focus: COMPONENT_FOCUS.EDITOR }))
-                break;
-        }
+        this.setState(() => ({ focus: COMPONENT_FOCUS[type.toUpperCase()] }));
     }
 
     render() {
