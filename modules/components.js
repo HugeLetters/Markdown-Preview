@@ -203,7 +203,7 @@ class Background extends React.Component {
         return (new Array(this.colCount)).fill(1).map((_, i) => {
             const word = words[i % 2].toUpperCase();
             const focusStyle = i % 2 == focusIndex ? { color: "black", WebkitTextStroke: "2px white" } : {};
-            return <span style={{ ...this.colStyle, ...focusStyle }}>{word}</span>
+            return <span style={{ ...this.colStyle, ...focusStyle }} class="unselectable">{word}</span>
         })
     }
     themeEditor = () => {
