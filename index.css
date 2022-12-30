@@ -8,8 +8,6 @@ html {
 *::before,
 *::after {
   box-sizing: border-box;
-  background-color: rgba(0, 255, 0, 0.05);
-  outline: 1px solid rgba(255, 0, 0, 0.4);
 }
 
 .unselectable {
@@ -30,11 +28,14 @@ main {
   flex-direction: column;
   align-items: center;
   min-height: 100vh;
+  background-color: aqua;
 }
 
 .wrapper {
   margin: 0.3rem;
   position: relative;
+  background-color: white;
+  box-shadow: 0px 0px 10px black;
 }
 .wrapper #previewer,
 .wrapper #editor {
@@ -51,7 +52,8 @@ main {
   max-width: 100%;
 }
 .wrapper .elementHeader {
-  background-color: white;
+  background-color: aquamarine;
+  border: 1px solid black;
   padding: 0.25rem;
   height: 2.5rem;
   display: flex;

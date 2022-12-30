@@ -1,10 +1,10 @@
-import { APP_SIZE_STATE, TEXT_COMPONENT, WRAPPER_SIZE_STATE } from "./enums.js";
+import { APP_SIZE_STATE, COMPONENT_FOCUS, TEXT_COMPONENT, WRAPPER_SIZE_STATE } from "./enums.js";
 
 class Wrapper extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            position: { top: 0, left: 0 }
+            position: { top: 0, left: 0 },
         };
         this.trackedData = {
             mouseOrigin: { top: 0, left: 0 },
@@ -78,9 +78,9 @@ class Wrapper extends React.Component {
     render() {
         console.log(this);
         const label = this.props.label[0].toUpperCase() + this.props.label.slice(1);
-        const style = { ...this.getStyle(this.props.sizeState) };
+        const style = { ...this.getStyle(this.props.sizeState), zIndex: this.props.zIndex };
         return (
-            <div ref="wrapper" style={style} class="wrapper">
+            <div ref="wrapper" style={style} class="wrapper" onMouseDown={this.props.onFocus}>
                 <div class="elementHeader unselectable" onMouseDown={this.handleDragStart}>
                     <span class="elementLabel">{label}</span>
                     <button onClick={this.toggleSize} class="fa-solid fa-maximize" />
@@ -104,22 +104,21 @@ class TextComponent extends React.Component {
             closed: { display: "none" }
         }
         this.trackedData = {
-            height: 1,
+            height: "calc(48vh - 2.5rem)",
         }
     };
     static defaultProps = { type: TEXT_COMPONENT.EDITOR, sizeState: WRAPPER_SIZE_STATE.MINIMIZED };
 
-    handleSizeChange = (size) => {
-        this.props.onSizeChange(this.props.type, size)
-    }
+    handleSizeChange = (size) => { this.props.onSizeChange(this.props.type, size) }
+    handleFocus = () => { this.props.onFocus(this.props.type) }
     getStyle = (state) => {
         switch (state) {
             case WRAPPER_SIZE_STATE.MINIMIZED:
                 return { ...this.styles.minimized, height: this.trackedData.height };
-                case WRAPPER_SIZE_STATE.MAXIMIZED:
+            case WRAPPER_SIZE_STATE.MAXIMIZED:
                 this.trackedData.height = this.refs.textElement.getBoundingClientRect().height;
                 return this.styles.maximized;
-                case WRAPPER_SIZE_STATE.CLOSED:
+            case WRAPPER_SIZE_STATE.CLOSED:
                 this.trackedData.height = this.refs.textElement.getBoundingClientRect().height;
                 return this.styles.closed;
             default:
@@ -142,7 +141,14 @@ class TextComponent extends React.Component {
                 break;
         }
         Object.assign(componentBody.props, { style: this.getStyle(this.props.sizeState) });
-        return <Wrapper label={this.props.type} sizeState={this.props.sizeState} onSizeChange={this.handleSizeChange} > {componentBody}</Wrapper >
+        return (<Wrapper
+            label={this.props.type}
+            sizeState={this.props.sizeState}
+            onSizeChange={this.handleSizeChange}
+            zIndex={this.props.zIndex}
+            onFocus={this.handleFocus}>
+            {componentBody}
+        </Wrapper >)
     }
 }
 
@@ -151,6 +157,7 @@ export class App extends React.Component {
         super(props)
         this.state = {
             size: APP_SIZE_STATE.BOTH_OPEN,
+            focus: COMPONENT_FOCUS.EDITOR
         }
     }
 
@@ -167,6 +174,19 @@ export class App extends React.Component {
                 break;
             default:
                 this.setState(() => ({ size: APP_SIZE_STATE.BOTH_OPEN }))
+                break;
+        }
+    }
+    handleFocus = (type) => {
+        switch (type) {
+            case TEXT_COMPONENT.EDITOR:
+                this.setState(() => ({ focus: COMPONENT_FOCUS.EDITOR }))
+                break;
+            case TEXT_COMPONENT.PREVIEWER:
+                this.setState(() => ({ focus: COMPONENT_FOCUS.PREVIEWER }))
+                break;
+            default:
+                this.setState(() => ({ focus: COMPONENT_FOCUS.EDITOR }))
                 break;
         }
     }
@@ -189,8 +209,20 @@ export class App extends React.Component {
                 break;
         }
         return (<React.Fragment>
-            <TextComponent type={TEXT_COMPONENT.EDITOR} sizeState={editorSize} onSizeChange={this.handleSizeChange} />
-            <TextComponent type={TEXT_COMPONENT.PREVIEWER} sizeState={previewerSize} onSizeChange={this.handleSizeChange} />
+            <TextComponent
+                type={TEXT_COMPONENT.EDITOR}
+                sizeState={editorSize}
+                onSizeChange={this.handleSizeChange}
+                onFocus={this.handleFocus}
+                zIndex={1 * (this.state.focus === COMPONENT_FOCUS.EDITOR)}
+            />
+            <TextComponent
+                type={TEXT_COMPONENT.PREVIEWER}
+                sizeState={previewerSize}
+                onSizeChange={this.handleSizeChange}
+                onFocus={this.handleFocus}
+                zIndex={1 * (this.state.focus === COMPONENT_FOCUS.PREVIEWER)}
+            />
         </React.Fragment>)
     }
 }

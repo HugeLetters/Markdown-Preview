@@ -14,3 +14,8 @@ export const WRAPPER_SIZE_STATE = Object.freeze({
     MINIMIZED: 1,
     MAXIMIZED: 2
 })
+
+export const COMPONENT_FOCUS = Object.freeze({
+    EDITOR: 1,
+    PREVIEWER: 2
+})
