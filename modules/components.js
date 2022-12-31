@@ -160,7 +160,6 @@ class Background extends React.Component {
         const { width, height } = document.body.getBoundingClientRect();
         this.state = { size: { width, height } };
         this.rowSize = 100;
-        this.colCount = 4;
         this.style = {
             position: "absolute",
             background: "#600060",
@@ -187,7 +186,6 @@ class Background extends React.Component {
             position: "relative",
             display: "flex",
             flexFlow: "row",
-            left: -width,
             animation: "backgroundScroll 10s linear 0s infinite"
         }
         new ResizeObserver(
@@ -197,23 +195,23 @@ class Background extends React.Component {
             })
             .observe(document.body);
     }
-    themeBoth = (focus) => {
+    themeBoth = (colCount, focus) => {
         const words = [TEXT_COMPONENT.EDITOR, TEXT_COMPONENT.PREVIEWER];
         const focusIndex = focus === COMPONENT_FOCUS.EDITOR ? 0 : 1;
-        return (new Array(this.colCount)).fill(1).map((_, i) => {
+        return (new Array(colCount)).fill(1).map((_, i) => {
             const word = words[i % 2].toUpperCase();
             const focusStyle = i % 2 == focusIndex ? { color: "black", WebkitTextStroke: "2px white" } : {};
-            return <span style={{ ...this.colStyle, ...focusStyle }} class="unselectable">{word}</span>
+            return <span style={{ ...this.colStyle, ...focusStyle }} >{word}</span>
         })
     }
-    themeEditor = () => {
-        return (new Array(this.colCount)).fill(1).map((_, i) => {
+    themeEditor = (colCount) => {
+        return (new Array(colCount)).fill(1).map((_, i) => {
             const focusStyle = i % 2 ? { color: "black", WebkitTextStroke: "2px white" } : {};
             return <span style={{ ...this.colStyle, ...focusStyle }}>{TEXT_COMPONENT.EDITOR.toUpperCase()}</span>
         })
     }
-    themePreviewer = () => {
-        return (new Array(this.colCount)).fill(1).map((_, i) => {
+    themePreviewer = (colCount) => {
+        return (new Array(colCount)).fill(1).map((_, i) => {
             const focusStyle = i % 2 ? { color: "black", WebkitTextStroke: "2px white" } : {};
             return <span style={{ ...this.colStyle, ...focusStyle }}>{TEXT_COMPONENT.PREVIEWER.toUpperCase()}</span>
         })
@@ -222,28 +220,29 @@ class Background extends React.Component {
     render() {
         console.log(this);
         const rowCount = Math.floor(this.state.size.height / this.rowSize);
-
+        const colCount = 2 * Math.floor(this.state.size.width / (6 * this.rowSize));
         let backgroundRowHalf;
         switch (this.props.theme.size) {
             case APP_SIZE_STATE.BOTH:
-                backgroundRowHalf = this.themeBoth(this.props.theme.focus);
+                backgroundRowHalf = this.themeBoth(colCount, this.props.theme.focus);
                 break;
             case APP_SIZE_STATE.EDITOR:
-                backgroundRowHalf = this.themeEditor();
+                backgroundRowHalf = this.themeEditor(colCount);
                 break;
             case APP_SIZE_STATE.PREVIEWER:
-                backgroundRowHalf = this.themePreviewer();
+                backgroundRowHalf = this.themePreviewer(colCount);
                 break;
             default:
                 backgroundRowHalf = this.themeBoth(this.props.theme.focus);
                 break;
         }
+        const backgroundRow = (direction) => (new Array(3)).fill(1).map(() => (
+            <div style={{ ...this.rowHalfStyle, animationDirection: direction, left: -this.state.size.width }}>{backgroundRowHalf}</div>
+        ))
         const backgroundArray = (new Array(rowCount)).fill(1).map((_, i) => {
             const direction = i % 2 ? "normal" : "reverse";
             return <div style={this.rowStyle}>
-                <div style={{ ...this.rowHalfStyle, animationDirection: direction }}>{backgroundRowHalf}</div>
-                <div style={{ ...this.rowHalfStyle, animationDirection: direction }}>{backgroundRowHalf}</div>
-                <div style={{ ...this.rowHalfStyle, animationDirection: direction }}>{backgroundRowHalf}</div>
+                {backgroundRow(direction)}
             </div >
         });
         return <div id="background" style={{ ...this.style, ...this.state.size }}>{backgroundArray}</div >
