@@ -16,11 +16,12 @@ class Wrapper extends React.Component {
             maximized: { minHeight: "98vh", display: "block", top: 0, left: 0 },
             closed: { display: "none" }
         }
+        this.wrapperRef = React.createRef();
     }
     static defaultProps = { label: "Component", sizeState: WRAPPER_SIZE_STATE.MINIMIZED }
 
     getAbsoluteXY = () => {
-        const { top, left, width, height } = this.refs.wrapper.getBoundingClientRect();
+        const { top, left, width, height } = this.wrapperRef.current.getBoundingClientRect();
         const absoluteTop = window.scrollY + top - this.state.position.top;
         const absoluteLeft = window.scrollX + left - this.state.position.left;
         return { top: absoluteTop, left: absoluteLeft, width, height }
@@ -80,7 +81,7 @@ class Wrapper extends React.Component {
         const label = this.props.label[0].toUpperCase() + this.props.label.slice(1);
         const style = { ...this.getStyle(this.props.sizeState), zIndex: this.props.zIndex };
         return (
-            <div ref="wrapper" style={style} class="wrapper" onMouseDown={this.props.onFocus}>
+            <div ref={this.wrapperRef} style={style} class="wrapper" onMouseDown={this.props.onFocus}>
                 <div class="elementHeader unselectable" onMouseDown={this.handleDragStart}>
                     <span class="elementLabel">{label}</span>
                     <button onClick={this.toggleSize} class="fa-solid fa-maximize" />
@@ -106,6 +107,23 @@ class TextComponent extends React.Component {
         this.trackedData = {
             height: "calc(48vh - 2.5rem)",
         }
+        this.textElement = React.createRef();
+        switch (this.props.type) {
+            case TEXT_COMPONENT.EDITOR:
+                this.componentBody = (style) => (<textarea id={TEXT_COMPONENT.EDITOR} ref={this.textElement} style={style} onInput={this.handleInput}>{this.props.defaultInput}</textarea>);
+                this.handleInput = (e) => { this.props.onInput(DOMPurify.sanitize(marked.parse(e.target.value))) };
+                break;
+            case TEXT_COMPONENT.PREVIEWER:
+                this.componentBody = (style) => (<div
+                    id={TEXT_COMPONENT.PREVIEWER}
+                    ref={this.textElement}
+                    style={style}
+                    dangerouslySetInnerHTML={{ __html: this.props.content }} />);
+                break;
+            default:
+                this.componentBody = (style) => (<textarea id={TEXT_COMPONENT.EDITOR} ref={this.textElement} style={style} />);
+                break;
+        }
     };
     static defaultProps = { type: TEXT_COMPONENT.EDITOR, sizeState: WRAPPER_SIZE_STATE.MINIMIZED };
 
@@ -118,10 +136,10 @@ class TextComponent extends React.Component {
             case WRAPPER_SIZE_STATE.MINIMIZED:
                 return { ...this.styles.minimized, height: this.trackedData.height };
             case WRAPPER_SIZE_STATE.MAXIMIZED:
-                this.trackedData.height = this.refs.textElement.getBoundingClientRect().height;
+                this.trackedData.height = this.textElement.current.getBoundingClientRect().height;
                 return this.styles.maximized;
             case WRAPPER_SIZE_STATE.CLOSED:
-                this.trackedData.height = this.refs.textElement.getBoundingClientRect().height;
+                this.trackedData.height = this.textElement.current.getBoundingClientRect().height;
                 return this.styles.closed;
             default:
                 return this.styles.closed;
@@ -130,26 +148,13 @@ class TextComponent extends React.Component {
 
     render() {
         console.log(this);
-        let componentBody;
-        switch (this.props.type) {
-            case TEXT_COMPONENT.EDITOR:
-                componentBody = <textarea id={TEXT_COMPONENT.EDITOR} ref="textElement"></textarea>;
-                break;
-            case TEXT_COMPONENT.PREVIEWER:
-                componentBody = <div id={TEXT_COMPONENT.PREVIEWER} ref="textElement"></div>;
-                break;
-            default:
-                componentBody = <textarea id={TEXT_COMPONENT.EDITOR} ref="textElement"></textarea>;
-                break;
-        }
-        Object.assign(componentBody.props, { style: this.getStyle(this.props.sizeState) });
         return (<Wrapper
             label={this.props.type}
             sizeState={this.props.sizeState}
             onSizeChange={this.handleSizeChange}
             zIndex={this.props.zIndex}
             onFocus={this.handleFocus}>
-            {componentBody}
+            {this.componentBody(this.getStyle(this.props.sizeState))}
         </Wrapper >)
     }
 }
@@ -201,19 +206,19 @@ class Background extends React.Component {
         return (new Array(colCount)).fill(1).map((_, i) => {
             const word = words[i % 2].toUpperCase();
             const focusStyle = i % 2 == focusIndex ? { color: "black", WebkitTextStroke: "2px white" } : {};
-            return <span style={{ ...this.colStyle, ...focusStyle }} >{word}</span>
+            return <span key={i} style={{ ...this.colStyle, ...focusStyle }} >{word}</span>
         })
     }
     themeEditor = (colCount) => {
         return (new Array(colCount)).fill(1).map((_, i) => {
             const focusStyle = i % 2 ? { color: "black", WebkitTextStroke: "2px white" } : {};
-            return <span style={{ ...this.colStyle, ...focusStyle }}>{TEXT_COMPONENT.EDITOR.toUpperCase()}</span>
+            return <span key={i} style={{ ...this.colStyle, ...focusStyle }}>{TEXT_COMPONENT.EDITOR.toUpperCase()}</span>
         })
     }
     themePreviewer = (colCount) => {
         return (new Array(colCount)).fill(1).map((_, i) => {
             const focusStyle = i % 2 ? { color: "black", WebkitTextStroke: "2px white" } : {};
-            return <span style={{ ...this.colStyle, ...focusStyle }}>{TEXT_COMPONENT.PREVIEWER.toUpperCase()}</span>
+            return <span key={i} style={{ ...this.colStyle, ...focusStyle }}>{TEXT_COMPONENT.PREVIEWER.toUpperCase()}</span>
         })
     }
 
@@ -236,12 +241,12 @@ class Background extends React.Component {
                 backgroundRowHalf = this.themeBoth(this.props.theme.focus);
                 break;
         }
-        const backgroundRow = (direction) => (new Array(4)).fill(1).map(() => (
-            <div style={{ ...this.rowHalfStyle, animationDirection: direction, left: -this.state.size.width }}>{backgroundRowHalf}</div>
+        const backgroundRow = (direction) => (new Array(4)).fill(1).map((_, i) => (
+            <div key={i} style={{ ...this.rowHalfStyle, animationDirection: direction, left: -this.state.size.width }}>{backgroundRowHalf}</div>
         ))
         const backgroundArray = (new Array(rowCount)).fill(1).map((_, i) => {
             const direction = i % 2 ? "normal" : "reverse";
-            return <div style={this.rowStyle}>
+            return <div key={i} style={this.rowStyle}>
                 {backgroundRow(direction)}
             </div >
         });
@@ -249,12 +254,15 @@ class Background extends React.Component {
     }
 }
 
-export class App extends React.PureComponent {
+export default class App extends React.PureComponent {
     constructor(props) {
         super(props)
+        this.defaultInput = this.props.config.inputText;
+        this.defaultLang = this.props.config.codeLanguage;
         this.state = {
             size: APP_SIZE_STATE.BOTH,
-            focus: COMPONENT_FOCUS.EDITOR
+            focus: COMPONENT_FOCUS.EDITOR,
+            input: DOMPurify.sanitize(marked.parse(this.defaultInput)),
         }
     }
 
@@ -276,6 +284,9 @@ export class App extends React.PureComponent {
     }
     handleFocus = (type) => {
         this.setState(() => ({ focus: COMPONENT_FOCUS[type.toUpperCase()] }));
+    }
+    handleInput = (input) => {
+        this.setState(() => ({ input }));
     }
 
     render() {
@@ -303,6 +314,8 @@ export class App extends React.PureComponent {
                 onSizeChange={this.handleSizeChange}
                 onFocus={this.handleFocus}
                 zIndex={1 * (this.state.focus === COMPONENT_FOCUS.EDITOR)}
+                onInput={this.handleInput}
+                defaultInput={this.defaultInput}
             />
             <TextComponent
                 type={TEXT_COMPONENT.PREVIEWER}
@@ -310,6 +323,8 @@ export class App extends React.PureComponent {
                 onSizeChange={this.handleSizeChange}
                 onFocus={this.handleFocus}
                 zIndex={1 * (this.state.focus === COMPONENT_FOCUS.PREVIEWER)}
+                content={this.state.input}
+                defaultLang={this.defaultLang}
             />
         </React.Fragment>)
     }
