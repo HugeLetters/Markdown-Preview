@@ -186,7 +186,7 @@ class Background extends React.Component {
             position: "relative",
             display: "flex",
             flexFlow: "row",
-            animation: "backgroundScroll 5s linear 0s infinite"
+            animation: "backgroundScroll 10s linear 0s infinite"
         }
         new ResizeObserver(
             (entries) => {
