@@ -186,7 +186,7 @@ class Background extends React.Component {
             position: "relative",
             display: "flex",
             flexFlow: "row",
-            animation: "backgroundScroll 10s linear 0s infinite"
+            animation: "backgroundScroll 5s linear 0s infinite"
         }
         new ResizeObserver(
             (entries) => {
@@ -219,8 +219,8 @@ class Background extends React.Component {
 
     render() {
         console.log(this);
-        const rowCount = Math.floor(this.state.size.height / this.rowSize);
-        const colCount = 2 * Math.floor(this.state.size.width / (6 * this.rowSize));
+        const rowCount = Math.ceil(this.state.size.height / this.rowSize);
+        const colCount = 2 * Math.ceil(this.state.size.width / (6 * this.rowSize));
         let backgroundRowHalf;
         switch (this.props.theme.size) {
             case APP_SIZE_STATE.BOTH:
@@ -236,7 +236,7 @@ class Background extends React.Component {
                 backgroundRowHalf = this.themeBoth(this.props.theme.focus);
                 break;
         }
-        const backgroundRow = (direction) => (new Array(3)).fill(1).map(() => (
+        const backgroundRow = (direction) => (new Array(4)).fill(1).map(() => (
             <div style={{ ...this.rowHalfStyle, animationDirection: direction, left: -this.state.size.width }}>{backgroundRowHalf}</div>
         ))
         const backgroundArray = (new Array(rowCount)).fill(1).map((_, i) => {
