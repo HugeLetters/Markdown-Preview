@@ -19,3 +19,5 @@ export const COMPONENT_FOCUS = Object.freeze({
     EDITOR: 1,
     PREVIEWER: 2
 })
+
+export const getKeyByValue = (object, value) => Object.keys(object).find(key => object[key] === value);

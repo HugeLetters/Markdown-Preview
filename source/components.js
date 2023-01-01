@@ -1,4 +1,4 @@
-import { APP_SIZE_STATE, COMPONENT_FOCUS, TEXT_COMPONENT, WRAPPER_SIZE_STATE } from "./enums.js";
+import { APP_SIZE_STATE, COMPONENT_FOCUS, getKeyByValue, TEXT_COMPONENT, WRAPPER_SIZE_STATE } from "./enums.js";
 
 class Wrapper extends React.Component {
     constructor(props) {
@@ -11,11 +11,6 @@ class Wrapper extends React.Component {
             elementOrigin: { top: 0, left: 0 },
             windowOrigin: { top: 0, left: 0 }
         };
-        this.sizeStyles = {
-            minimized: { minHeight: "48vh", display: "block" },
-            maximized: { minHeight: "98vh", display: "block", top: 0, left: 0 },
-            closed: { display: "none" }
-        }
         this.wrapperRef = React.createRef();
     }
     static defaultProps = { label: "Component", sizeState: WRAPPER_SIZE_STATE.MINIMIZED }
@@ -39,18 +34,6 @@ class Wrapper extends React.Component {
                 break;
         }
     }
-    getStyle = (sizeState) => {
-        switch (sizeState) {
-            case WRAPPER_SIZE_STATE.MINIMIZED:
-                return { ...this.sizeStyles.minimized, ...this.state.position };
-            case WRAPPER_SIZE_STATE.MAXIMIZED:
-                return this.sizeStyles.maximized;
-            case WRAPPER_SIZE_STATE.CLOSED:
-                return this.sizeStyles.closed;
-            default:
-                return this.sizeStyles.closed;
-        }
-    }
     handleDrag = (e) => {
         const { mouseOrigin, elementOrigin, windowOrigin } = this.trackedData;
         const { width, height } = document.body.getBoundingClientRect();
@@ -71,20 +54,29 @@ class Wrapper extends React.Component {
         window.addEventListener("mouseup",
             () => { window.removeEventListener("mousemove", this.handleDrag) },
             { once: true })
+        // Mouse initial absolute position
         this.trackedData.mouseOrigin = { top: e.clientY, left: e.clientX }
+        // Element initial relative position
         this.trackedData.elementOrigin = { top: this.state.position.top, left: this.state.position.left }
+        // Element default absolute position accounting for scroll as well & element size as well
         this.trackedData.windowOrigin = this.getAbsoluteXY();
     }
 
     render() {
         console.log(this);
         const label = this.props.label[0].toUpperCase() + this.props.label.slice(1);
-        const style = { ...this.getStyle(this.props.sizeState), zIndex: this.props.zIndex };
+        const minimized = this.props.sizeState === WRAPPER_SIZE_STATE.MINIMIZED;
         return (
-            <div ref={this.wrapperRef} style={style} class="wrapper" onMouseDown={this.props.onFocus}>
+            <div
+                ref={this.wrapperRef}
+                style={minimized ? this.state.position : {}}
+                class="wrapper"
+                onMouseDown={this.props.onFocus}
+                focused={1 * this.props.focused}
+                sizeState={getKeyByValue(WRAPPER_SIZE_STATE, this.props.sizeState)}>
                 <div class="elementHeader unselectable" onMouseDown={this.handleDragStart}>
                     <span class="elementLabel">{label}</span>
-                    <button onClick={this.toggleSize} class="fa-solid fa-maximize" />
+                    <button onClick={this.toggleSize} class={`fa-solid ${minimized ? "fa-maximize" : "fa-minimize"}`} />
                 </div>
                 {this.props.children}
             </div >)
@@ -154,7 +146,7 @@ class TextComponent extends React.Component {
             label={this.props.type}
             sizeState={this.props.sizeState}
             onSizeChange={this.handleSizeChange}
-            zIndex={this.props.zIndex}
+            focused={this.props.focused}
             onFocus={this.handleFocus}>
             {this.componentBody(this.getStyle(this.props.sizeState))}
         </Wrapper >)
@@ -315,7 +307,7 @@ export default class App extends React.PureComponent {
                 sizeState={editorSize}
                 onSizeChange={this.handleSizeChange}
                 onFocus={this.handleFocus}
-                zIndex={1 * (this.state.focus === COMPONENT_FOCUS.EDITOR)}
+                focused={this.state.focus === COMPONENT_FOCUS.EDITOR}
                 onInput={this.handleInput}
                 defaultInput={this.defaultInput}
             />
@@ -324,7 +316,7 @@ export default class App extends React.PureComponent {
                 sizeState={previewerSize}
                 onSizeChange={this.handleSizeChange}
                 onFocus={this.handleFocus}
-                zIndex={1 * (this.state.focus === COMPONENT_FOCUS.PREVIEWER)}
+                focused={this.state.focus === COMPONENT_FOCUS.PREVIEWER}
                 content={this.state.input}
                 defaultLang={this.defaultLang}
             />
