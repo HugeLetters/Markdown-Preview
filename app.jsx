@@ -7,7 +7,6 @@ const main = async () => {
 }
 
 const initSetup = (config) => {
-    marked.setOptions({ breaks: true })
     const renderer = {
         codespan(code) {
             const replaceDict = { "&lt;": "<", "&gt;": ">" };
@@ -19,7 +18,7 @@ const initSetup = (config) => {
             return `<pre class=language-${lang}><code class=language-${lang}>${prismHighlight(code, lang)}</code></pre>`
         }
     }
-    marked.use({ renderer })
+    marked.use({ renderer, breaks: true })
 }
 
 const prismHighlight = (code, lang) => (Prism.languages[lang]
