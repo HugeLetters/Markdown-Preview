@@ -147,7 +147,8 @@ class Background extends React.Component {
     themeOne = (colCount, type) => {
         const word = (APP_SIZE_STATE[type] || "ERROR").toUpperCase();
         return (new Array(colCount)).fill(1).map((_, i) => {
-            return this.backgroundCell(word, i % 2, i)
+            // +type+1 cause otherwise sometimes on theme switch focused items remaind focused and it doesn't look nice
+            return this.backgroundCell(word, (i + type + 1) % 2, i)
         })
     }
 
