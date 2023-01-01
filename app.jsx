@@ -1,10 +1,10 @@
-import App from "./source/components.js";
+import App from "./source/components.jsx";
 
-(async () => {
+const main = async () => {
     const config = await fetch("./source/config.json").then(x => x.json());
     initSetup(config);
-    ReactDOM.render(<App config={config} />,document.body);
-})()
+    ReactDOM.render(<App config={config} />, document.body);
+}
 
 const initSetup = (config) => {
     marked.setOptions({ breaks: true })
@@ -32,3 +32,4 @@ const prismHighlight = (code, lang) => (Prism.languages[lang]
         Prism.languages[config.codeLanguage],
         config.codeLanguage)))
 
+main();
