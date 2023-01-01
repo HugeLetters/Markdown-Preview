@@ -39,6 +39,7 @@ body {
   min-width: 40vw;
   max-width: 95vw;
   height: calc(48vh - 2.5rem);
+  padding: 5px;
 }
 .wrapper #previewer {
   resize: both;

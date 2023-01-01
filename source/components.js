@@ -111,7 +111,9 @@ class TextComponent extends React.Component {
         switch (this.props.type) {
             case TEXT_COMPONENT.EDITOR:
                 this.componentBody = (style) => (<textarea id={TEXT_COMPONENT.EDITOR} ref={this.textElement} style={style} onInput={this.handleInput}>{this.props.defaultInput}</textarea>);
-                this.handleInput = (e) => { this.props.onInput(DOMPurify.sanitize(marked.parse(e.target.value))) };
+                this.handleInput = (e) => {
+                    this.props.onInput(DOMPurify.sanitize(marked.parse(e.target.value)))
+                };
                 break;
             case TEXT_COMPONENT.PREVIEWER:
                 this.componentBody = (style) => (<div

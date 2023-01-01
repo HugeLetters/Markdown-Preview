@@ -1,11 +1,17 @@
 import App from "./source/components.js";
 
 (async () => {
+    const config = await fetch("./source/config.json").then(x => x.json());
+    initSetup(config);
+    ReactDOM.render(<App config={config} />,document.body);
+})()
 
-    const config = await fetch("./source/config.json").then(x => x.json())
+const initSetup = (config) => {
     marked.setOptions({ breaks: true })
     const renderer = {
         codespan(code) {
+            const replaceDict = { "&lt;": "<", "&gt;": ">" };
+            code = code.replace(/(&lt;)|(&gt;)/g, x => replaceDict[x]);
             return `<code class=language-${config.codeLanguage}>${prismHighlight(code, config.codeLanguage)}</code>`
         },
         code(code, lang) {
@@ -14,10 +20,7 @@ import App from "./source/components.js";
         }
     }
     marked.use({ renderer })
-
-    const root = ReactDOM.createRoot(document.body);
-    root.render(<App config={config} />);
-})()
+}
 
 const prismHighlight = (code, lang) => (Prism.languages[lang]
     ? (Prism.highlight(
@@ -28,3 +31,4 @@ const prismHighlight = (code, lang) => (Prism.languages[lang]
         code,
         Prism.languages[config.codeLanguage],
         config.codeLanguage)))
+
