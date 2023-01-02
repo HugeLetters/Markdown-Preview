@@ -131,6 +131,7 @@ body {
   }
 }
 #background {
+  z-index: -1;
   position: absolute;
   background: #600060;
   font-family: Impact;
