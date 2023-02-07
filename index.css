@@ -136,7 +136,7 @@ body {
   font-size: 1.5rem;
 }
 
-@-webkit-keyframes backgroundScroll1 {
+@-webkit-keyframes backgroundScroll {
   0% {
     transform: translateX(-50%);
   }
@@ -148,7 +148,7 @@ body {
   }
 }
 
-@keyframes backgroundScroll1 {
+@keyframes backgroundScroll {
   0% {
     transform: translateX(-50%);
   }
