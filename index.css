@@ -18,14 +18,14 @@ body {
   flex-direction: column;
   align-items: center;
   min-height: 100vh;
-  background-color: aqua;
+  background-color: black;
 }
 
 .wrapper {
   margin: 0.3rem;
   position: relative;
   background-color: white;
-  box-shadow: 0px 0px 10px black;
+  box-shadow: 0px 0px 10px goldenrod;
   z-index: 0;
 }
 .wrapper[focused=true] {
@@ -46,9 +46,12 @@ body {
 }
 .wrapper #previewer,
 .wrapper #editor {
+  outline: 1px solid goldenrod;
   min-width: 40vw;
   max-width: 95vw;
   padding: 5px;
+  background-color: black;
+  color: goldenrod;
 }
 .wrapper #previewer[sizeState=CLOSED],
 .wrapper #editor[sizeState=CLOSED] {
@@ -72,10 +75,35 @@ body {
 }
 .wrapper #previewer img {
   max-width: 100%;
+  background-color: goldenrod;
+}
+.wrapper #previewer a {
+  transition: text-shadow 0.1s linear;
+}
+.wrapper #previewer a:link {
+  color: yellow;
+  -webkit-text-decoration-color: yellow;
+          text-decoration-color: yellow;
+}
+.wrapper #previewer a:visited {
+  color: orangered;
+  -webkit-text-decoration-color: orangered;
+          text-decoration-color: orangered;
+}
+.wrapper #previewer a:hover {
+  text-shadow: 0 0 0.2em yellow, 0 0 0.2em yellow, 0 0 0.2em yellow;
+}
+.wrapper #previewer :not(pre) > code {
+  background: repeating-linear-gradient(135deg, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3) 5%, transparent 5%, transparent 10%);
+  background-color: goldenrod;
+}
+.wrapper #previewer pre:has(> code) {
+  background-color: goldenrod;
 }
 .wrapper .elementHeader {
-  background-color: aquamarine;
-  border: 1px solid black;
+  background-color: black;
+  color: goldenrod;
+  outline: 1px solid goldenrod;
   padding: 0.25rem;
   height: 2.5rem;
   display: flex;
@@ -96,10 +124,11 @@ body {
 .wrapper .elementHeader button::before {
   font-size: 1.9rem;
   cursor: pointer;
+  color: black;
+  -webkit-text-stroke: 1px goldenrod;
 }
-.wrapper .elementHeader button:hover {
-  -webkit-text-stroke: 1px black;
-  color: aqua;
+.wrapper .elementHeader button:hover::before {
+  color: goldenrod;
 }
 .wrapper .elementHeader .elementLabel {
   margin: auto 0;
@@ -107,7 +136,7 @@ body {
   font-size: 1.5rem;
 }
 
-@-webkit-keyframes backgroundScroll {
+@-webkit-keyframes backgroundScroll1 {
   0% {
     transform: translateX(-50%);
   }
@@ -119,7 +148,7 @@ body {
   }
 }
 
-@keyframes backgroundScroll {
+@keyframes backgroundScroll1 {
   0% {
     transform: translateX(-50%);
   }
@@ -133,10 +162,7 @@ body {
 #background {
   z-index: -1;
   position: absolute;
-  background: #600060;
-  font-family: Impact;
-  color: white;
-  -webkit-text-stroke: 2px black;
+  background: black;
   display: flex;
   flex-flow: column;
   justify-content: space-evenly;
@@ -160,14 +186,41 @@ body {
   left: inherit;
 }
 #background .backgroundRow .backgroundRowSlice .backgroundCell {
+  font-family: Impact;
+  color: goldenrod;
   overflow: hidden;
   white-space: nowrap;
   margin: 0 10px;
-  transition: color 0.4s linear;
+  transition: text-shadow 0.3s linear, color 0.3s linear, -webkit-text-stroke-color 0.3s linear;
+  color: black;
+  -webkit-text-stroke: 0.1rem goldenrod;
 }
 #background .backgroundRow .backgroundRowSlice .backgroundCell[focused=true] {
-  color: black;
-  -webkit-text-stroke: 2px white;
+  color: goldenrod;
+  -webkit-text-stroke-color: black;
+  text-shadow: 0 0 0.5rem goldenrod;
+}
+
+::-webkit-scrollbar {
+  background-color: goldenrod;
+}
+
+::-webkit-scrollbar-thumb {
+  border: 1px solid goldenrod;
+  background: black;
+  border-radius: 0.3rem;
+}
+::-webkit-scrollbar-thumb:hover {
+  box-shadow: 0 0 0.3rem black;
+}
+
+::-webkit-scrollbar-button {
+  border: 1px solid goldenrod;
+  background-color: black;
+}
+
+::-webkit-scrollbar-corner {
+  background-color: goldenrod;
 }
 
 .unselectable {
